@@ -1,4 +1,3 @@
-# car-data-platform
 # Car Data Platform
 
 End-to-end Data Engineering project demonstrating modern data stack using Python, Airflow, dbt and PostgreSQL.
