@@ -31,14 +31,12 @@ CREATE SCHEMA IF NOT EXISTS mart;
 
 
 -- Vehicle manufacturers from NHTSA API
-CREATE TABLE IF NOT EXISTS raw.api_vehicle_makes (
-
-    make_id INTEGER,
+CREATE TABLE IF NOT EXISTS raw.api_vehicle_makes
+(
+    make_id INTEGER PRIMARY KEY,
     make_name TEXT,
     country TEXT,
-
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-
 );
 
 

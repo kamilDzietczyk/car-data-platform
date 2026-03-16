@@ -17,6 +17,10 @@ def run_pipeline():
             """
             INSERT INTO raw.api_vehicle_makes (make_id, make_name, created_at)
             VALUES (%s, %s, %s)
+            ON CONFLICT (make_id)
+            DO UPDATE SET
+                make_name = EXCLUDED.make_name,
+                created_at = EXCLUDED.created_at
             """,
             (
                 make["Make_ID"],
@@ -30,7 +34,9 @@ def run_pipeline():
     cursor.close()
     conn.close()
 
-    print(f"Inserted {len(makes)} records")
+    print(
+        f"Pipeline finished. Upserted {len(makes)} records into raw.api_vehicle_makes"
+    )
 
 
 if __name__ == "__main__":
