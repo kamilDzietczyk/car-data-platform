@@ -57,3 +57,41 @@ CREATE TABLE IF NOT EXISTS raw.car_listings (
     ingested_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     pipeline_run_id TEXT
 );
+
+-- ============================================================================
+-- STAGGING VIEW
+-- ============================================================================
+
+--Stagging view for raw.api_vehicle_makes
+CREATE OR REPLACE VIEW staging.stg_vehicle_makes AS
+SELECT
+    make_id,
+    NULLIF(TRIM(make_name), '') AS make_name,
+    country,
+    source_system,
+    ingested_at,
+    pipeline_run_id
+FROM raw.api_vehicle_makes;
+
+--Stagging view for raw.stg_car_listings
+CREATE OR REPLACE VIEW staging.stg_car_listings AS
+SELECT
+    id,
+    price,
+    year,
+    NULLIF(TRIM(manufacturer), '') AS manufacturer,
+    NULLIF(TRIM(model), '') AS model,
+    LOWER(NULLIF(TRIM(condition), '')) AS condition,
+    LOWER(NULLIF(TRIM(fuel), '')) AS fuel,
+    LOWER(NULLIF(TRIM(transmission), '')) AS transmission,
+    odometer,
+    UPPER(NULLIF(TRIM(state), '')) AS state,
+    source_system,
+    ingested_at,
+    pipeline_run_id
+FROM raw.car_listings
+WHERE price IS NOT NULL
+  AND price > 0
+  AND year IS NOT NULL
+  AND NULLIF(TRIM(manufacturer), '') IS NOT NULL
+  AND NULLIF(TRIM(model), '') IS NOT NULL;
