@@ -61,3 +61,26 @@ CREATE TABLE IF NOT EXISTS raw.car_listings (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
 );
+
+CREATE TABLE IF NOT EXISTS raw.car_listings (
+
+    id SERIAL PRIMARY KEY,
+
+    price INTEGER,
+    year INTEGER,
+
+    manufacturer TEXT,
+    model TEXT,
+
+    condition TEXT,
+    fuel TEXT,
+    transmission TEXT,
+
+    odometer INTEGER,
+    state TEXT,
+
+    source_system TEXT DEFAULT 'craigslist_dataset',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ingestion_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+);
