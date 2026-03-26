@@ -31,56 +31,29 @@ CREATE SCHEMA IF NOT EXISTS mart;
 
 
 -- Vehicle manufacturers from NHTSA API
-CREATE TABLE IF NOT EXISTS raw.api_vehicle_makes
-(
+CREATE TABLE IF NOT EXISTS raw.api_vehicle_makes (
     make_id INTEGER PRIMARY KEY,
     make_name TEXT,
     country TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    source_system TEXT NOT NULL DEFAULT 'nhtsa_api',
+    ingested_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    pipeline_run_id TEXT
 );
 
 
 -- Used car listings dataset
 CREATE TABLE IF NOT EXISTS raw.car_listings (
-
-    id SERIAL PRIMARY KEY,
-
+    id BIGSERIAL PRIMARY KEY,
     price INTEGER,
     year INTEGER,
-
     manufacturer TEXT,
     model TEXT,
-
     condition TEXT,
     fuel TEXT,
     transmission TEXT,
-
     odometer INTEGER,
     state TEXT,
-
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-
-);
-
-CREATE TABLE IF NOT EXISTS raw.car_listings (
-
-    id SERIAL PRIMARY KEY,
-
-    price INTEGER,
-    year INTEGER,
-
-    manufacturer TEXT,
-    model TEXT,
-
-    condition TEXT,
-    fuel TEXT,
-    transmission TEXT,
-
-    odometer INTEGER,
-    state TEXT,
-
-    source_system TEXT DEFAULT 'craigslist_dataset',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    ingestion_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-
+    source_system TEXT NOT NULL DEFAULT 'craigslist_dataset',
+    ingested_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    pipeline_run_id TEXT
 );

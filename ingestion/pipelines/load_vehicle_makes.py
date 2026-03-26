@@ -1,4 +1,5 @@
 import logging
+import uuid
 from datetime import datetime
 
 from psycopg2.extras import execute_values
@@ -9,16 +10,14 @@ from ingestion.db.connection import get_connection
 
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    format="%(asctime)s | %(levelname)s | %(message)s"
 )
 
 
 def run_pipeline():
-
-    logging.info("Pipeline started")
+    logging.info("Vehicle makes pipeline started")
 
     try:
-
         conn = get_connection()
         cursor = conn.cursor()
 
@@ -28,23 +27,39 @@ def run_pipeline():
 
         logging.info(f"Fetched {len(makes)} records from API")
 
+        pipeline_run_id = str(uuid.uuid4())
+        ingested_at = datetime.utcnow()
+        source_system = "nhtsa_api"
+
         records = [
             (
                 make["Make_ID"],
                 make["Make_Name"],
                 None,
-                datetime.utcnow()
+                source_system,
+                ingested_at,
+                pipeline_run_id
             )
             for make in makes
         ]
 
         query = """
-            INSERT INTO raw.api_vehicle_makes (make_id, make_name, country, created_at)
+            INSERT INTO raw.api_vehicle_makes (
+                make_id,
+                make_name,
+                country,
+                source_system,
+                ingested_at,
+                pipeline_run_id
+            )
             VALUES %s
             ON CONFLICT (make_id)
             DO UPDATE SET
                 make_name = EXCLUDED.make_name,
-                created_at = EXCLUDED.created_at
+                country = EXCLUDED.country,
+                source_system = EXCLUDED.source_system,
+                ingested_at = EXCLUDED.ingested_at,
+                pipeline_run_id = EXCLUDED.pipeline_run_id
         """
 
         execute_values(cursor, query, records)
@@ -52,15 +67,15 @@ def run_pipeline():
         conn.commit()
 
         logging.info(f"Upserted {len(records)} records into raw.api_vehicle_makes")
+        logging.info(f"pipeline_run_id={pipeline_run_id}")
 
         cursor.close()
         conn.close()
 
-        logging.info("Pipeline finished successfully")
+        logging.info("Vehicle makes pipeline finished successfully")
 
     except Exception as e:
-
-        logging.error(f"Pipeline failed: {e}")
+        logging.error(f"Vehicle makes pipeline failed: {e}")
         raise
 
 

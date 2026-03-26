@@ -1,4 +1,5 @@
 import logging
+import uuid
 from datetime import datetime
 
 from psycopg2.extras import execute_values
@@ -28,6 +29,10 @@ def run_pipeline():
 
         df = df.where(df.notna(), None)
 
+        pipeline_run_id = str(uuid.uuid4())
+        ingested_at = datetime.utcnow()
+        source_system = "craigslist_dataset"
+
         records = [
             (
                 row["price"],
@@ -39,7 +44,9 @@ def run_pipeline():
                 row["transmission"],
                 row["odometer"],
                 row["state"],
-                datetime.utcnow()
+                source_system,
+                ingested_at,
+                pipeline_run_id
             )
             for _, row in df.iterrows()
         ]
@@ -55,7 +62,9 @@ def run_pipeline():
                 transmission,
                 odometer,
                 state,
-                created_at
+                source_system,
+                ingested_at,
+                pipeline_run_id
             )
             VALUES %s
         """
@@ -65,6 +74,7 @@ def run_pipeline():
         conn.commit()
 
         logging.info(f"Inserted {len(records)} records into raw.car_listings")
+        logging.info(f"pipeline_run_id={pipeline_run_id}")
 
         cursor.close()
         conn.close()
