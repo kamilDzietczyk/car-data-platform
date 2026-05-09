@@ -18,3 +18,9 @@ clean-targets:
 models:
   car_data_platform:
     +materialized: view
+
+    staging:
+      +schema: staging
+
+    marts:
+      +schema: marts

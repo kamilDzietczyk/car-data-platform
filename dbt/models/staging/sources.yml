@@ -3,6 +3,121 @@ version: 2
 sources:
   - name: raw
     schema: raw
+    description: "Raw source data loaded by Python ingestion pipelines."
     tables:
       - name: api_vehicle_makes
+        description: "Raw vehicle makes data fetched from the NHTSA API."
+        columns:
+          - name: make_id
+            description: "Unique vehicle make identifier from the source API."
+            tests:
+              - not_null
+              - unique
+
+          - name: make_name
+            description: "Vehicle make name from the source API."
+
+          - name: source_system
+            description: "Name of the source system for lineage and auditability."
+            tests:
+              - not_null
+
+          - name: ingested_at
+            description: "Timestamp when the record was ingested into the raw layer."
+            tests:
+              - not_null
+
       - name: car_listings
+        description: "Raw car listings loaded from the CSV dataset."
+        columns:
+          - name: id
+            description: "Technical primary key generated in PostgreSQL."
+            tests:
+              - not_null
+              - unique
+
+          - name: price
+            description: "Car listing price."
+
+          - name: year
+            description: "Vehicle production year."
+
+          - name: manufacturer
+            description: "Vehicle manufacturer name."
+
+          - name: model
+            description: "Vehicle model name."
+
+          - name: source_system
+            description: "Name of the source system for lineage and auditability."
+            tests:
+              - not_null
+
+          - name: ingested_at
+            description: "Timestamp when the record was ingested into the raw layer."
+            tests:
+              - not_null
+
+models:
+  - name: stg_vehicle_makes
+    description: "Staging model for cleaned and standardized vehicle makes."
+    columns:
+      - name: make_id
+        description: "Unique vehicle make identifier."
+        tests:
+          - not_null
+          - unique
+
+      - name: make_name
+        description: "Cleaned vehicle make name."
+        tests:
+          - not_null
+
+      - name: source_system
+        description: "Source system identifier."
+        tests:
+          - not_null
+
+      - name: ingested_at
+        description: "Raw ingestion timestamp."
+        tests:
+          - not_null
+
+  - name: stg_car_listings
+    description: "Staging model for cleaned and standardized car listings."
+    columns:
+      - name: id
+        description: "Technical listing identifier."
+        tests:
+          - not_null
+          - unique
+
+      - name: price
+        description: "Listing price. Filtered to be greater than zero in staging."
+        tests:
+          - not_null
+
+      - name: year
+        description: "Vehicle production year."
+        tests:
+          - not_null
+
+      - name: manufacturer
+        description: "Cleaned manufacturer name."
+        tests:
+          - not_null
+
+      - name: model
+        description: "Cleaned model name."
+        tests:
+          - not_null
+
+      - name: source_system
+        description: "Source system identifier."
+        tests:
+          - not_null
+
+      - name: ingested_at
+        description: "Raw ingestion timestamp."
+        tests:
+          - not_null
