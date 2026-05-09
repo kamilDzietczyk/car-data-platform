@@ -121,3 +121,57 @@ models:
         description: "Raw ingestion timestamp."
         tests:
           - not_null
+
+      - name: fuel
+        tests:
+          - accepted_values:
+              values: ['gas']
+
+      - name: transmission
+        description: "Transmission type."
+        tests:
+          - accepted_values:
+              values: ['automatic', 'manual']
+              
+      - name: condition
+        description: "Vehicle condition."
+        tests:
+          - accepted_values:
+              values: ['excellent', 'good', 'fair']
+  - name: dim_manufacturers
+    description: "Dimension table containing unique vehicle manufacturers."
+
+    columns:
+      - name: manufacturer_id
+        description: "Technical manufacturer identifier."
+        tests:
+          - not_null
+          - unique
+
+      - name: manufacturer_name
+        description: "Manufacturer name."
+        tests:
+          - not_null
+
+  - name: fct_car_listings
+    description: "Fact table for car listings."
+
+    columns:
+      - name: listing_id
+        description: "Technical listing identifier."
+        tests:
+          - not_null
+          - unique
+
+      - name: manufacturer_id
+        description: "Foreign key to dim_manufacturers."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_manufacturers')
+              field: manufacturer_id
+
+      - name: price
+        description: "Listing price."
+        tests:
+          - not_null
