@@ -35,6 +35,19 @@ services:
     depends_on:
       - postgres
 
+  dbt:
+    build:
+      context: ./dbt
+      dockerfile: Dockerfile
+    container_name: car_data_dbt
+    volumes:
+      - ./dbt:/usr/app
+    working_dir: /usr/app
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+
 
 volumes:
   postgres_data:
