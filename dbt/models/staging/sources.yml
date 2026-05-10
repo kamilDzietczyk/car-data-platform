@@ -125,18 +125,21 @@ models:
       - name: fuel
         tests:
           - accepted_values:
+              arguments:
               values: ['gas']
 
       - name: transmission
         description: "Transmission type."
         tests:
           - accepted_values:
+              arguments:
               values: ['automatic', 'manual']
               
       - name: condition
         description: "Vehicle condition."
         tests:
           - accepted_values:
+              arguments:
               values: ['excellent', 'good', 'fair']
   - name: dim_manufacturers
     description: "Dimension table containing unique vehicle manufacturers."
@@ -168,8 +171,9 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('dim_manufacturers')
-              field: manufacturer_id
+              arguments:
+                to: ref('dim_manufacturers')
+                field: manufacturer_id  
 
       - name: price
         description: "Listing price."
